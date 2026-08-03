@@ -3,104 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UU Digital - Portal Hukum Indonesia</title>
+    <title>UU Digital Indonesia</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: #f8fafc; color: #1e293b; min-height: 100vh; display: flex; flex-direction: column; }
-        header { background: #1e1b4b; color: white; padding: 1.5rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.25rem; }
-        header p { color: #a5b4fc; font-size: 0.9rem; }
-        .container { flex: 1; max-width: 800px; width: 100%; margin: 0 auto; padding: 1.5rem 1rem; }
-        .search-card { background: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
+        body { background-color: #f1f5f9; color: #0f172a; min-height: 100vh; padding-bottom: 3rem; }
+        header { background: #1e1b4b; color: white; padding: 2rem 1rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.3rem; }
+        header p { color: #a5b4fc; font-size: 0.95rem; }
+        
+        .container { max-width: 850px; width: 92%; margin: -1.5rem auto 0 auto; }
+        
+        .search-card { background: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
         .search-box { display: flex; gap: 8px; margin-bottom: 1rem; }
-        input[type="text"] { flex: 1; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; outline: none; }
-        input[type="text"]:focus { border-color: #6366f1; ring: 2px #c7d2fe; }
-        button { padding: 12px 24px; background: #4f46e5; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-        button:hover { background: #4338ca; }
+        input[type="text"] { flex: 1; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; }
+        input[type="text"]:focus { border-color: #4f46e5; }
+        
         .categories { display: flex; gap: 8px; flex-wrap: wrap; }
-        .badge { background: #f1f5f9; color: #475569; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; }
-        .badge:hover { background: #e0e7ff; color: #3730a3; border-color: #c7d2fe; }
-        .results { display: flex; flex-direction: column; gap: 1rem; }
-        .card { background: white; padding: 1.25rem; border-radius: 10px; border-left: 4px solid #4f46e5; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .card h3 { color: #1e1b4b; font-size: 1.1rem; margin-bottom: 0.5rem; }
-        .card p { font-size: 0.95rem; line-height: 1.6; color: #334155; }
-        .source-tag { display: inline-block; margin-top: 10px; font-size: 0.75rem; font-weight: 600; color: #6366f1; background: #eef2ff; padding: 3px 10px; border-radius: 6px; }
+        .badge { background: #f8fafc; color: #475569; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; }
+        .badge:hover, .badge.active { background: #4f46e5; color: white; border-color: #4f46e5; }
+        
+        .results-info { font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem; font-weight: 500; }
+        .results { display: flex; flex-direction: column; gap: 0.75rem; }
+        
+        /* Accordion Card */
+        .law-item { background: white; border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .law-header { padding: 1rem 1.25rem; background: white; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: #1e1b4b; }
+        .law-header:hover { background: #f8fafc; }
+        .law-tag { font-size: 0.75rem; background: #eef2ff; color: #4f46e5; padding: 2px 8px; border-radius: 4px; font-weight: 700; margin-left: 8px; }
+        .law-body { padding: 1rem 1.25rem; background: #fafafa; border-top: 1px solid #f1f5f9; display: none; font-size: 0.95rem; line-height: 1.6; color: #334155; }
+        .law-item.open .law-body { display: block; }
+        .arrow { transition: transform 0.2s; font-size: 0.8rem; color: #94a3b8; }
+        .law-item.open .arrow { transform: rotate(180deg); }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🏛️ UU Digital Indonesia</h1>
-        <p>Pencarian Kitab Hukum & Peraturan Perundang-undangan</p>
+        <h1>🏛️ Portal UU Digital</h1>
+        <p>Database Kitab Hukum & Peraturan Republik Indonesia</p>
     </header>
 
     <div class="container">
         <div class="search-card">
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Ketik kata kunci (misal: pidana, kerja, data, pencurian)..." onkeyup="if(event.key==='Enter') searchLaw()">
-                <button onclick="searchLaw()">Cari</button>
+                <input type="text" id="searchInput" placeholder="Cari nomor pasal atau kata kunci (misal: pidana, kerja, penipuan)..." onkeyup="filterData()">
             </div>
             <div class="categories">
-                <span class="badge" onclick="filterCat('UUD 1945')">UUD 1945</span>
-                <span class="badge" onclick="filterCat('KUHP')">KUHP</span>
-                <span class="badge" onclick="filterCat('KUHPerdata')">KUHPerdata</span>
-                <span class="badge" onclick="filterCat('UU ITE')">UU ITE</span>
-                <span class="badge" onclick="filterCat('Ketenagakerjaan')">Ketenagakerjaan</span>
-                <span class="badge" onclick="renderResults(databaseHukum)">Tampilkan Semua</span>
+                <span class="badge active" onclick="setCategory('Semua', this)">Semua</span>
+                <span class="badge" onclick="setCategory('UUD 1945', this)">UUD 1945</span>
+                <span class="badge" onclick="setCategory('KUHP', this)">KUHP (Pidana)</span>
+                <span class="badge" onclick="setCategory('KUHPerdata', this)">KUHPerdata</span>
+                <span class="badge" onclick="setCategory('UU ITE', this)">UU ITE & PDP</span>
+                <span class="badge" onclick="setCategory('Ketenagakerjaan', this)">Ketenagakerjaan</span>
             </div>
         </div>
 
+        <div class="results-info" id="infoText">Menampilkan semua pasal</div>
         <div class="results" id="resultsContainer"></div>
     </div>
 
     <script>
         const databaseHukum = [
-            { judul: "UUD 1945 - Pasal 1 Ayat (3)", isi: "Negara Indonesia adalah negara hukum.", kat: "UUD 1945" },
-            { judul: "UUD 1945 - Pasal 27 Ayat (2)", isi: "Tiap-tiap warga negara berhak atas pekerjaan dan penghidupan yang layak bagi kemanusiaan.", kat: "UUD 1945" },
-            { judul: "UUD 1945 - Pasal 28D Ayat (1)", isi: "Setiap orang berhak atas pengakuan, jaminan, perlindungan, dan kepastian hukum yang adil serta perlakuan yang sama di hadapan hukum.", kat: "UUD 1945" },
-            { judul: "KUHP - Pasal 362 (Pencurian)", isi: "Barang siapa mengambil barang sesuatu, yang seluruhnya atau sebagian kepunyaan orang lain, dengan maksud untuk dimiliki secara melawan hukum, diancam karena pencurian, dengan pidana penjara paling lama lima tahun.", kat: "KUHP" },
-            { judul: "KUHP - Pasal 378 (Penipuan)", isi: "Barang siapa dengan maksud untuk menguntungkan diri sendiri atau orang lain secara melawan hukum, dengan memakai nama palsu atau tipu muslihat, diancam karena penipuan dengan pidana penjara paling lama empat tahun.", kat: "KUHP" },
-            { judul: "KUHP - Pasal 310 (Pencemaran Nama Baik)", isi: "Barang siapa sengaja merusak kehormatan atau nama baik seseorang dengan menuduhkan sesuatu hal, diancam karena pencemaran dengan pidana penjara paling lama sembilan bulan.", kat: "KUHP" },
-            { judul: "KUHPerdata - Pasal 1320 (Syarat Sah Perjanjian)", isi: "Supaya terjadi persetujuan yang sah, diperlukan empat syarat: 1. Kesepakatan mereka yang mengikatkan dirinya; 2. Kecakapan untuk membuat suatu perikatan; 3. Suatu pokok persoalan tertentu; 4. Suatu sebab yang tidak terlarang.", kat: "KUHPerdata" },
+            // UUD 1945
+            { judul: "UUD 1945 - Pasal 1 (Bentuk & Kedaulatan)", isi: "(1) Negara Indonesia ialah Negara Kesatuan, yang berbentuk Republik.<br>(2) Kedaulatan berada di tangan rakyat dan dilaksanakan menurut Undang-Undang Dasar.<br>(3) Negara Indonesia adalah negara hukum.", kat: "UUD 1945" },
+            { judul: "UUD 1945 - Pasal 27 (Kedudukan Hukum & Kerja)", isi: "(1) Segala warga negara bersamaan kedudukannya di dalam hukum dan pemerintahan dan wajib menjunjung hukum dan pemerintahan itu dengan tidak ada kecualinya.<br>(2) Tiap-tiap warga negara berhak atas pekerjaan dan penghidupan yang layak bagi kemanusiaan.", kat: "UUD 1945" },
+            { judul: "UUD 1945 - Pasal 28D (Kepastian Hukum)", isi: "(1) Setiap orang berhak atas pengakuan, jaminan, perlindungan, dan kepastian hukum yang adil serta perlakuan yang sama di hadapan hukum.", kat: "UUD 1945" },
+            { judul: "UUD 1945 - Pasal 31 (Pendidikan)", isi: "(1) Setiap warga negara berhak mendapat pendidikan.<br>(2) Setiap warga negara wajib mengikuti pendidikan dasar dan pemerintah wajib membiayainya.", kat: "UUD 1945" },
+
+            // KUHP
+            { judul: "KUHP - Pasal 362 (Pencurian)", isi: "Barang siapa mengambil barang sesuatu, yang seluruhnya atau sebagian kepunyaan orang lain, dengan maksud untuk dimiliki secara melawan hukum, diancam karena pencurian, dengan pidana penjara paling lama lima tahun atau pidana denda.", kat: "KUHP" },
+            { judul: "KUHP - Pasal 378 (Penipuan)", isi: "Barang siapa dengan maksud untuk menguntungkan diri sendiri atau orang lain secara melawan hukum, dengan memakai nama palsu atau martabat palsu, dengan tipu muslihat, ataupun rangkaian kebohongan, membujuk orang lain untuk menyerahkan barang sesuatu kepadanya, diancam karena penipuan dengan pidana penjara paling lama empat tahun.", kat: "KUHP" },
+            { judul: "KUHP - Pasal 310 (Pencemaran Nama Baik)", isi: "Barang siapa sengaja merusak kehormatan atau nama baik seseorang dengan menuduhkan sesuatu hal, yang maksudnya terang supaya hal itu diketahui umum, diancam karena pencemaran dengan pidana penjara paling lama sembilan bulan.", kat: "KUHP" },
+            { judul: "KUHP - Pasal 351 (Penganiayaan)", isi: "(1) Penganiayaan diancam dengan pidana penjara paling lama dua tahun delapan bulan.<br>(2) Jika perbuatan mengakibatkan luka-luka berat, yang bersalah diancam dengan pidana penjara paling lama lima tahun.", kat: "KUHP" },
+
+            // KUHPerdata
+            { judul: "KUHPerdata - Pasal 1320 (Syarat Sah Perjanjian)", isi: "Supaya terjadi persetujuan yang sah, diperlukan empat syarat:<br>1. Kesepakatan mereka yang mengikatkan dirinya;<br>2. Kecakapan untuk membuat suatu perikatan;<br>3. Suatu pokok persoalan tertentu;<br>4. Suatu sebab yang tidak terlarang.", kat: "KUHPerdata" },
             { judul: "KUHPerdata - Pasal 1365 (Perbuatan Melawan Hukum)", isi: "Tiap perbuatan yang melanggar hukum dan membawa kerugian kepada orang lain, mewajibkan orang yang menimbulkan kerugian itu karena salahnya untuk menggantikan kerugian tersebut.", kat: "KUHPerdata" },
-            { judul: "UU ITE - Pasal 27A", isi: "Setiap Orang dengan sengaja menyerang kehormatan atau nama baik orang lain dengan menuduhkan suatu hal melalui Sistem Elektronik dengan maksud supaya hal tersebut diketahui umum.", kat: "UU ITE" },
-            { judul: "UU PDP - Pasal 65 (Perlindungan Data Pribadi)", isi: "Setiap Orang dilarang secara melawan hukum memperoleh atau mengumpulkan Data Pribadi yang bukan miliknya dengan maksud untuk menguntungkan diri sendiri atau orang lain.", kat: "UU ITE" },
-            { judul: "UU Ketenagakerjaan - Pasal 77", isi: "Waktu kerja meliputi 7 jam 1 hari dan 40 jam 1 minggu untuk 6 hari kerja, atau 8 jam 1 hari dan 40 jam 1 minggu untuk 5 hari kerja.", kat: "Ketenagakerjaan" },
-            { judul: "UU Ketenagakerjaan - Pasal 156 (Pesangon)", isi: "Dalam hal terjadi pemutusan hubungan kerja (PHK), pengusaha diwajibkan membayar uang pesangon dan/atau uang penghargaan masa kerja.", kat: "Ketenagakerjaan" }
+            { judul: "KUHPerdata - Pasal 1233 (Sumber Perikatan)", isi: "Perikatan lahir karena suatu persetujuan atau karena undang-undang.", kat: "KUHPerdata" },
+
+            // UU ITE & PDP
+            { judul: "UU ITE - Pasal 27A (Pencemaran di Media Sosial)", isi: "Setiap Orang dengan sengaja menyerang kehormatan atau nama baik orang lain dengan menuduhkan suatu hal melalui Sistem Elektronik dengan maksud supaya hal tersebut diketahui umum.", kat: "UU ITE" },
+            { judul: "UU ITE - Pasal 28 Ayat (2) (SARA & Hoaks)", isi: "Setiap Orang dengan sengaja dan tanpa hak menyebarkan informasi yang ditujukan untuk menimbulkan rasa kebencian atau permusuhan individu dan/atau kelompok masyarakat tertentu berdasarkan atas suku, agama, ras, dan antargolongan (SARA).", kat: "UU ITE" },
+            { judul: "UU PDP - Pasal 65 (Perlindungan Data Pribadi)", isi: "(1) Setiap Orang dilarang secara melawan hukum memperoleh atau mengumpulkan Data Pribadi yang bukan miliknya.<br>(2) Setiap Orang dilarang secara melawan hukum mengungkapkan Data Pribadi yang bukan miliknya.", kat: "UU ITE" },
+
+            // Ketenagakerjaan
+            { judul: "UU Ketenagakerjaan - Pasal 77 (Jam Kerja)", isi: "(1) Setiap pengusaha wajib melaksanakan ketentuan waktu kerja.<br>(2) Waktu kerja meliputi 7 jam 1 hari (40 jam 1 minggu) untuk 6 hari kerja, atau 8 jam 1 hari (40 jam 1 minggu) untuk 5 hari kerja.", kat: "Ketenagakerjaan" },
+            { judul: "UU Ketenagakerjaan - Pasal 156 (Uang Pesangon PHK)", isi: "Dalam hal terjadi pemutusan hubungan kerja (PHK), pengusaha diwajibkan membayar uang pesangon dan/atau uang penghargaan masa kerja dan uang penggantian hak yang seharusnya diterima.", kat: "Ketenagakerjaan" },
+            { judul: "UU Ketenagakerjaan - Pasal 88 (Hak Upah Layak)", isi: "(1) Setiap pekerja/buruh berhak memperoleh penghasilan yang memenuhi penghidupan yang layak bagi kemanusiaan.", kat: "Ketenagakerjaan" }
         ];
+
+        let activeCategory = 'Semua';
 
         function renderResults(data) {
             const container = document.getElementById('resultsContainer');
+            const infoText = document.getElementById('infoText');
             container.innerHTML = '';
+            
+            infoText.innerText = `Menampilkan ${data.length} pasal`;
+
             if(data.length === 0) {
-                container.innerHTML = '<div class="card"><p style="text-align:center; color:#64748b;">Tidak ada pasal/peraturan yang ditemukan.</p></div>';
+                container.innerHTML = '<div style="text-align:center; padding:2rem; background:white; border-radius:10px; color:#64748b;">Pasal tidak ditemukan. Coba gunakan kata kunci lain.</div>';
                 return;
             }
-            data.forEach(item => {
+
+            data.forEach((item, index) => {
                 container.innerHTML += `
-                    <div class="card">
-                        <h3>${item.judul}</h3>
-                        <p>${item.isi}</p>
-                        <span class="source-tag">Kategori: ${item.kat}</span>
+                    <div class="law-item" id="item-${index}">
+                        <div class="law-header" onclick="toggleItem(${index})">
+                            <div>
+                                ${item.judul}
+                                <span class="law-tag">${item.kat}</span>
+                            </div>
+                            <span class="arrow">▼</span>
+                        </div>
+                        <div class="law-body">
+                            ${item.isi}
+                        </div>
                     </div>
                 `;
             });
         }
 
-        function searchLaw() {
+        function toggleItem(index) {
+            const el = document.getElementById(`item-${index}`);
+            el.classList.toggle('open');
+        }
+
+        function setCategory(cat, element) {
+            activeCategory = cat;
+            document.querySelectorAll('.badge').forEach(b => b.classList.remove('active'));
+            element.classList.add('active');
+            filterData();
+        }
+
+        function filterData() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            if(!query) { renderResults(databaseHukum); return; }
-            const filtered = databaseHukum.filter(item => 
-                item.judul.toLowerCase().includes(query) || item.isi.toLowerCase().includes(query)
-            );
+            
+            const filtered = databaseHukum.filter(item => {
+                const matchCat = (activeCategory === 'Semua' || item.kat === activeCategory);
+                const matchQuery = item.judul.toLowerCase().includes(query) || item.isi.toLowerCase().includes(query);
+                return matchCat && matchQuery;
+            });
+
             renderResults(filtered);
         }
 
-        function filterCat(category) {
-            const filtered = databaseHukum.filter(item => item.kat === category);
-            renderResults(filtered);
-        }
-
+        // Jalankan awal
         renderResults(databaseHukum);
     </script>
 </body>
