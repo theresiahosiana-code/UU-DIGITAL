@@ -62,7 +62,7 @@
             const aiResponse = document.getElementById('aiResponse');
 
             if (GEMINI_API_KEY === "PASTE_API_KEY_DI_SINI" || !GEMINI_API_KEY) {
-                alert("Kamu belum mengganti teks PASTE_API_KEY_DI_SINI di kode index.html!");
+                alert("Kamu belum memasukkan API Key di baris 53!");
                 return;
             }
 
@@ -99,7 +99,7 @@
                     aiResponse.innerHTML = `<div class="error-msg"><b>Error dari Google AI:</b> ${data.error.message}</div>`;
                     resultBox.style.display = 'block';
                 } else {
-                    aiResponse.innerHTML = `<div class="error-msg">Respon tidak dikenal dari AI. Cek konsol browser.</div>`;
+                    aiResponse.innerHTML = `<div class="error-msg">Respon tidak dikenal. Cek kembali API Key.</div>`;
                     resultBox.style.display = 'block';
                 }
             } catch (error) {
