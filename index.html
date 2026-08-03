@@ -12,7 +12,6 @@
         header p { color: #a5b4fc; font-size: 0.95rem; }
         
         .container { max-width: 850px; width: 92%; margin: -1.5rem auto 0 auto; }
-        
         .search-card { background: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
         .search-box { display: flex; gap: 8px; margin-bottom: 1rem; }
         input[type="text"] { flex: 1; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; }
@@ -25,7 +24,6 @@
         .results-info { font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem; font-weight: 500; }
         .results { display: flex; flex-direction: column; gap: 0.75rem; }
         
-        /* Accordion Card */
         .law-item { background: white; border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
         .law-header { padding: 1rem 1.25rem; background: white; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: #1e1b4b; }
         .law-header:hover { background: #f8fafc; }
@@ -40,13 +38,13 @@
 
     <header>
         <h1>🏛️ Portal UU Digital</h1>
-        <p>Database Kitab Hukum & Peraturan Republik Indonesia</p>
+        <p>Database Peraturan & Kitab Hukum Utama Indonesia</p>
     </header>
 
     <div class="container">
         <div class="search-card">
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Cari nomor pasal atau kata kunci (misal: pidana, kerja, penipuan)..." onkeyup="filterData()">
+                <input type="text" id="searchInput" placeholder="Cari pasal atau kata kunci (misal: pencurian, PHK, hoaks, HAM)..." onkeyup="filterData()">
             </div>
             <div class="categories">
                 <span class="badge active" onclick="setCategory('Semua', this)">Semua</span>
@@ -58,38 +56,42 @@
             </div>
         </div>
 
-        <div class="results-info" id="infoText">Menampilkan semua pasal</div>
+        <div class="results-info" id="infoText">Loading data...</div>
         <div class="results" id="resultsContainer"></div>
     </div>
 
     <script>
         const databaseHukum = [
             // UUD 1945
-            { judul: "UUD 1945 - Pasal 1 (Bentuk & Kedaulatan)", isi: "(1) Negara Indonesia ialah Negara Kesatuan, yang berbentuk Republik.<br>(2) Kedaulatan berada di tangan rakyat dan dilaksanakan menurut Undang-Undang Dasar.<br>(3) Negara Indonesia adalah negara hukum.", kat: "UUD 1945" },
-            { judul: "UUD 1945 - Pasal 27 (Kedudukan Hukum & Kerja)", isi: "(1) Segala warga negara bersamaan kedudukannya di dalam hukum dan pemerintahan dan wajib menjunjung hukum dan pemerintahan itu dengan tidak ada kecualinya.<br>(2) Tiap-tiap warga negara berhak atas pekerjaan dan penghidupan yang layak bagi kemanusiaan.", kat: "UUD 1945" },
+            { judul: "UUD 1945 - Pasal 1 (Bentuk & Kedaulatan)", isi: "(1) Negara Indonesia ialah Negara Kesatuan, yang berbentuk Republik.<br>(2) Kedaulatan berada di tangan rakyat dan dilaksanakan menurut UUD.<br>(3) Negara Indonesia adalah negara hukum.", kat: "UUD 1945" },
+            { judul: "UUD 1945 - Pasal 27 (Kedudukan Hukum & Kerja)", isi: "(1) Segala warga negara bersamaan kedudukannya di dalam hukum dan pemerintahan.<br>(2) Tiap-tiap warga negara berhak atas pekerjaan dan penghidupan yang layak bagi kemanusiaan.", kat: "UUD 1945" },
+            { judul: "UUD 1945 - Pasal 28A (Hak Hidup)", isi: "Setiap orang berhak untuk hidup serta berhak mempertahankan hidup dan menghidupkan kehidupannya.", kat: "UUD 1945" },
             { judul: "UUD 1945 - Pasal 28D (Kepastian Hukum)", isi: "(1) Setiap orang berhak atas pengakuan, jaminan, perlindungan, dan kepastian hukum yang adil serta perlakuan yang sama di hadapan hukum.", kat: "UUD 1945" },
-            { judul: "UUD 1945 - Pasal 31 (Pendidikan)", isi: "(1) Setiap warga negara berhak mendapat pendidikan.<br>(2) Setiap warga negara wajib mengikuti pendidikan dasar dan pemerintah wajib membiayainya.", kat: "UUD 1945" },
+            { judul: "UUD 1945 - Pasal 28E (Bebas Beragama & Berpendapat)", isi: "(1) Setiap orang bebas memeluk agama dan beribadat menurut agamanya.<br>(3) Setiap orang berhak atas kebebasan berserikat, berkumpul, dan mengeluarkan pendapat.", kat: "UUD 1945" },
 
-            // KUHP
-            { judul: "KUHP - Pasal 362 (Pencurian)", isi: "Barang siapa mengambil barang sesuatu, yang seluruhnya atau sebagian kepunyaan orang lain, dengan maksud untuk dimiliki secara melawan hukum, diancam karena pencurian, dengan pidana penjara paling lama lima tahun atau pidana denda.", kat: "KUHP" },
-            { judul: "KUHP - Pasal 378 (Penipuan)", isi: "Barang siapa dengan maksud untuk menguntungkan diri sendiri atau orang lain secara melawan hukum, dengan memakai nama palsu atau martabat palsu, dengan tipu muslihat, ataupun rangkaian kebohongan, membujuk orang lain untuk menyerahkan barang sesuatu kepadanya, diancam karena penipuan dengan pidana penjara paling lama empat tahun.", kat: "KUHP" },
-            { judul: "KUHP - Pasal 310 (Pencemaran Nama Baik)", isi: "Barang siapa sengaja merusak kehormatan atau nama baik seseorang dengan menuduhkan sesuatu hal, yang maksudnya terang supaya hal itu diketahui umum, diancam karena pencemaran dengan pidana penjara paling lama sembilan bulan.", kat: "KUHP" },
-            { judul: "KUHP - Pasal 351 (Penganiayaan)", isi: "(1) Penganiayaan diancam dengan pidana penjara paling lama dua tahun delapan bulan.<br>(2) Jika perbuatan mengakibatkan luka-luka berat, yang bersalah diancam dengan pidana penjara paling lama lima tahun.", kat: "KUHP" },
+            // KUHP (PIDANA)
+            { judul: "KUHP - Pasal 338 (Pembunuhan)", isi: "Barang siapa dengan sengaja merampas nyawa orang lain, diancam karena pembunuhan dengan pidana penjara paling lama lima belas tahun.", kat: "KUHP" },
+            { judul: "KUHP - Pasal 351 (Penganiayaan)", isi: "(1) Penganiayaan diancam dengan pidana penjara paling lama dua tahun delapan bulan.<br>(2) Jika perbuatan mengakibatkan luka berat, diancam penjara paling lama lima tahun.", kat: "KUHP" },
+            { judul: "KUHP - Pasal 362 (Pencurian Biasa)", isi: "Barang siapa mengambil barang sesuatu, yang seluruhnya atau sebagian kepunyaan orang lain, dengan maksud untuk dimiliki secara melawan hukum, diancam karena pencurian dengan pidana penjara paling lama lima tahun.", kat: "KUHP" },
+            { judul: "KUHP - Pasal 368 (Pemerasan & Pengancaman)", isi: "Barang siapa dengan maksud untuk menguntungkan diri sendiri secara melawan hukum, memaksa seseorang dengan kekerasan atau ancaman kekerasan untuk memberikan barang sesuatu, diancam dengan pidana penjara paling lama sembilan tahun.", kat: "KUHP" },
+            { judul: "KUHP - Pasal 372 (Penggelapan)", isi: "Barang siapa dengan sengaja dan melawan hukum mengaku sebagai milik sendiri barang sesuatu yang ada dalam kekuasaannya bukan karena kejahatan, diancam karena penggelapan dengan pidana penjara paling lama empat tahun.", kat: "KUHP" },
+            { judul: "KUHP - Pasal 378 (Penipuan)", isi: "Barang siapa dengan maksud untuk menguntungkan diri sendiri secara melawan hukum dengan memakai nama palsu, tipu muslihat, atau kebohongan, membujuk orang lain menyerahkan barang, diancam karena penipuan dengan pidana penjara paling lama empat tahun.", kat: "KUHP" },
 
-            // KUHPerdata
-            { judul: "KUHPerdata - Pasal 1320 (Syarat Sah Perjanjian)", isi: "Supaya terjadi persetujuan yang sah, diperlukan empat syarat:<br>1. Kesepakatan mereka yang mengikatkan dirinya;<br>2. Kecakapan untuk membuat suatu perikatan;<br>3. Suatu pokok persoalan tertentu;<br>4. Suatu sebab yang tidak terlarang.", kat: "KUHPerdata" },
-            { judul: "KUHPerdata - Pasal 1365 (Perbuatan Melawan Hukum)", isi: "Tiap perbuatan yang melanggar hukum dan membawa kerugian kepada orang lain, mewajibkan orang yang menimbulkan kerugian itu karena salahnya untuk menggantikan kerugian tersebut.", kat: "KUHPerdata" },
+            // KUHPERDATA
             { judul: "KUHPerdata - Pasal 1233 (Sumber Perikatan)", isi: "Perikatan lahir karena suatu persetujuan atau karena undang-undang.", kat: "KUHPerdata" },
+            { judul: "KUHPerdata - Pasal 1320 (Syarat Sah Perjanjian)", isi: "Supaya terjadi persetujuan yang sah, diperlukan empat syarat:<br>1. Kesepakatan mereka yang mengikatkan dirinya;<br>2. Kecakapan untuk membuat suatu perikatan;<br>3. Suatu pokok persoalan tertentu;<br>4. Suatu sebab yang tidak terlarang.", kat: "KUHPerdata" },
+            { judul: "KUHPerdata - Pasal 1338 (Asas Pacta Sunt Servanda)", isi: "Semua persetujuan yang dibuat sesuai dengan undang-undang berlaku sebagai undang-undang bagi mereka yang membuatnya.", kat: "KUHPerdata" },
+            { judul: "KUHPerdata - Pasal 1365 (Perbuatan Melawan Hukum)", isi: "Tiap perbuatan yang melanggar hukum dan membawa kerugian kepada orang lain, mewajibkan orang yang menimbulkan kerugian itu karena salahnya untuk menggantikan kerugian tersebut.", kat: "KUHPerdata" },
 
             // UU ITE & PDP
-            { judul: "UU ITE - Pasal 27A (Pencemaran di Media Sosial)", isi: "Setiap Orang dengan sengaja menyerang kehormatan atau nama baik orang lain dengan menuduhkan suatu hal melalui Sistem Elektronik dengan maksud supaya hal tersebut diketahui umum.", kat: "UU ITE" },
-            { judul: "UU ITE - Pasal 28 Ayat (2) (SARA & Hoaks)", isi: "Setiap Orang dengan sengaja dan tanpa hak menyebarkan informasi yang ditujukan untuk menimbulkan rasa kebencian atau permusuhan individu dan/atau kelompok masyarakat tertentu berdasarkan atas suku, agama, ras, dan antargolongan (SARA).", kat: "UU ITE" },
-            { judul: "UU PDP - Pasal 65 (Perlindungan Data Pribadi)", isi: "(1) Setiap Orang dilarang secara melawan hukum memperoleh atau mengumpulkan Data Pribadi yang bukan miliknya.<br>(2) Setiap Orang dilarang secara melawan hukum mengungkapkan Data Pribadi yang bukan miliknya.", kat: "UU ITE" },
+            { judul: "UU ITE - Pasal 27A (Pencemaran Nama Baik)", isi: "Setiap Orang dengan sengaja menyerang kehormatan atau nama baik orang lain dengan menuduhkan suatu hal melalui Sistem Elektronik dengan maksud supaya diketahui umum.", kat: "UU ITE" },
+            { judul: "UU ITE - Pasal 28 (Hoaks & Ujaran Kebencian SARA)", isi: "(1) Menyebarkan berita bohong dan menyesatkan yang merugikan konsumen.<br>(2) Menyebarkan informasi yang ditujukan untuk menimbulkan rasa kebencian berdasarkan SARA.", kat: "UU ITE" },
+            { judul: "UU PDP - Pasal 65 (Perlindungan Data Pribadi)", isi: "(1) Dilarang secara melawan hukum memperoleh atau mengumpulkan Data Pribadi yang bukan miliknya.<br>(2) Dilarang secara melawan hukum mengungkapkan Data Pribadi milik orang lain.", kat: "UU ITE" },
 
-            // Ketenagakerjaan
-            { judul: "UU Ketenagakerjaan - Pasal 77 (Jam Kerja)", isi: "(1) Setiap pengusaha wajib melaksanakan ketentuan waktu kerja.<br>(2) Waktu kerja meliputi 7 jam 1 hari (40 jam 1 minggu) untuk 6 hari kerja, atau 8 jam 1 hari (40 jam 1 minggu) untuk 5 hari kerja.", kat: "Ketenagakerjaan" },
-            { judul: "UU Ketenagakerjaan - Pasal 156 (Uang Pesangon PHK)", isi: "Dalam hal terjadi pemutusan hubungan kerja (PHK), pengusaha diwajibkan membayar uang pesangon dan/atau uang penghargaan masa kerja dan uang penggantian hak yang seharusnya diterima.", kat: "Ketenagakerjaan" },
-            { judul: "UU Ketenagakerjaan - Pasal 88 (Hak Upah Layak)", isi: "(1) Setiap pekerja/buruh berhak memperoleh penghasilan yang memenuhi penghidupan yang layak bagi kemanusiaan.", kat: "Ketenagakerjaan" }
+            // KETENAGAKERJAAN
+            { judul: "UU Ketenagakerjaan - Pasal 77 (Jam Kerja Resmi)", isi: "Waktu kerja meliputi 7 jam 1 hari (40 jam 1 minggu) untuk 6 hari kerja, atau 8 jam 1 hari (40 jam 1 minggu) untuk 5 hari kerja.", kat: "Ketenagakerjaan" },
+            { judul: "UU Ketenagakerjaan - Pasal 79 (Cuti Tahunan & Istirahat)", isi: "Pengusaha wajib memberi waktu istirahat dan cuti. Cuti tahunan sekurang-kurangnya 12 hari kerja setelah pekerja bekerja selama 12 bulan secara terus menerus.", kat: "Ketenagakerjaan" },
+            { judul: "UU Ketenagakerjaan - Pasal 156 (Pesangon PHK)", isi: "Dalam hal terjadi Pemutusan Hubungan Kerja (PHK), pengusaha diwajibkan membayar uang pesangon dan/atau uang penghargaan masa kerja.", kat: "Ketenagakerjaan" }
         ];
 
         let activeCategory = 'Semua';
@@ -99,7 +101,7 @@
             const infoText = document.getElementById('infoText');
             container.innerHTML = '';
             
-            infoText.innerText = `Menampilkan ${data.length} pasal`;
+            infoText.innerText = `Menampilkan ${data.length} pasal hukum`;
 
             if(data.length === 0) {
                 container.innerHTML = '<div style="text-align:center; padding:2rem; background:white; border-radius:10px; color:#64748b;">Pasal tidak ditemukan. Coba gunakan kata kunci lain.</div>';
@@ -125,8 +127,7 @@
         }
 
         function toggleItem(index) {
-            const el = document.getElementById(`item-${index}`);
-            el.classList.toggle('open');
+            document.getElementById(`item-${index}`).classList.toggle('open');
         }
 
         function setCategory(cat, element) {
@@ -138,17 +139,14 @@
 
         function filterData() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            
             const filtered = databaseHukum.filter(item => {
                 const matchCat = (activeCategory === 'Semua' || item.kat === activeCategory);
                 const matchQuery = item.judul.toLowerCase().includes(query) || item.isi.toLowerCase().includes(query);
                 return matchCat && matchQuery;
             });
-
             renderResults(filtered);
         }
 
-        // Jalankan awal
         renderResults(databaseHukum);
     </script>
 </body>
