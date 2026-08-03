@@ -52,7 +52,7 @@
     </div>
 
     <AQ.Ab8RN6J0mytmEYBLKh1RunWiI4dCaqIdKGnwWims_Kuap4UosQ>
-        // TEMPELKAN API KEY KAMU DI SINI:
+        // "AQ.Ab8RN6J0mytmEYBLKh1RunWiI4dCaqIdKGnwWims_Kuap4UosQ":
         const GEMINI_API_KEY = "AQ.Ab8RN6J0mytmEYBLKh1RunWiI4dCaqIdKGnwWims_Kuap4UosQ";
 
         async function askAI() {
