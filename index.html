@@ -1,456 +1,99 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UU Digital - Alkitab Style</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UU Digital - Portal Hukum Indonesia</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f7f6; color: #333; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        header { background: #1a365d; color: white; padding: 1.5rem; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .container { flex: 1; display: flex; flex-direction: column; max-width: 900px; width: 100%; margin: 0 auto; padding: 1rem; overflow-y: auto; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+        input[type="text"] { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; outline: none; }
+        button { padding: 12px 20px; background: #2b6cb0; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; }
+        button:hover { background: #2c5282; }
+        .categories { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .badge { background: #e2e8f0; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; border: 1px solid #cbd5e0; }
+        .badge:hover { background: #cbd5e0; }
+        .results { display: flex; flex-direction: column; gap: 1rem; padding-bottom: 2rem; }
+        .card { background: white; padding: 1.2rem; border-radius: 8px; border-left: 5px solid #2b6cb0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card h3 { color: #2c5282; margin-bottom: 0.5rem; }
+        .card p { font-size: 0.95rem; line-height: 1.5; color: #4a5568; }
+        .source-tag { display: inline-block; margin-top: 8px; font-size: 0.75rem; color: #718096; background: #edf2f7; padding: 2px 8px; border-radius: 4px; }
+    </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen overflow-y-auto h-auto pb-24">
+<body>
 
-  <!-- HEADER / NAVBAR -->
-  <header class="bg-indigo-900 text-white p-4 sticky top-0 shadow-md flex justify-between items-center z-20">
-    <div>
-      <h1 class="text-xl font-bold tracking-wide">UU Digital</h1>
-      <p class="text-xs text-indigo-200">Kitab Hukum Republik Indonesia</p>
+    <header>
+        <h1>🏛️ UU Digital Indonesia</h1>
+        <p>Pencarian Kitab Hukum & Peraturan Perundang-undangan</p>
+    </header>
+
+    <div class="container">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Cari pasal, UU, KUHP, ITE, Ketenagakerjaan...">
+            <button onclick="searchLaw()">Cari</button>
+        </div>
+
+        <div class="categories">
+            <span class="badge" onclick="filterCat('UUD 1945')">UUD 1945</span>
+            <span class="badge" onclick="filterCat('KUHP')">KUHP (Pidana)</span>
+            <span class="badge" onclick="filterCat('KUHPerdata')">KUHPerdata</span>
+            <span class="badge" onclick="filterCat('UU ITE')">UU ITE & PDP</span>
+            <span class="badge" onclick="filterCat('Ketenagakerjaan')">Ketenagakerjaan</span>
+        </div>
+
+        <div class="results" id="resultsContainer">
+            <!-- Data akan muncul di sini -->
+        </div>
     </div>
-    <button id="searchTrigger" type="button" class="bg-indigo-800 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-indigo-700">
-      🔍 Cari
-    </button>
-  </header>
 
-  <!-- KONTEN UTAMA -->
-  <main class="max-w-md mx-auto p-4 pb-28 overflow-y-auto h-auto">
-    <section id="view-home" data-view="home" class="space-y-4">
-      <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-5 rounded-2xl shadow-lg">
-        <span class="bg-white/20 text-xs px-2.5 py-1 rounded-full uppercase tracking-wider font-semibold">
-          Pencarian Hukum Nasional
-        </span>
-        <h2 class="text-lg font-bold mt-3 mb-1">Cari UU, PP, Perpres, KUHP, dan UUD 1945 secara real-time</h2>
-        <p class="text-sm text-indigo-100 mt-2">Gunakan kata kunci atau pilih kategori resmi dari basis data hukum Indonesia.</p>
-      </div>
-
-      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-        <div class="flex items-center justify-between gap-2">
-          <h3 class="text-base font-bold text-slate-700">Cari Dokumen Resmi</h3>
-          <span class="text-[11px] text-indigo-500 font-semibold uppercase tracking-wide">JDIH / JDIHN</span>
-        </div>
-
-        <div class="mt-3 flex gap-2">
-          <input id="liveSearchInput" type="text" placeholder="contoh: uu ite, uud 1945, perpres" class="flex-1 border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <button id="searchButton" type="button" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-sm font-semibold hover:bg-indigo-700">Cari</button>
-        </div>
-
-        <div id="categoryChips" class="mt-3 flex flex-wrap gap-2">
-          <button type="button" class="category-chip rounded-full border border-slate-200 px-3 py-1.5 text-sm text-slate-600 hover:border-indigo-500 hover:text-indigo-600" data-query="UUD 1945">UUD 1945</button>
-          <button type="button" class="category-chip rounded-full border border-slate-200 px-3 py-1.5 text-sm text-slate-600 hover:border-indigo-500 hover:text-indigo-600" data-query="KUHP">KUHP</button>
-          <button type="button" class="category-chip rounded-full border border-slate-200 px-3 py-1.5 text-sm text-slate-600 hover:border-indigo-500 hover:text-indigo-600" data-query="KUHPerdata">KUHPerdata</button>
-          <button type="button" class="category-chip rounded-full border border-slate-200 px-3 py-1.5 text-sm text-slate-600 hover:border-indigo-500 hover:text-indigo-600" data-query="UU ITE">UU ITE</button>
-          <button type="button" class="category-chip rounded-full border border-slate-200 px-3 py-1.5 text-sm text-slate-600 hover:border-indigo-500 hover:text-indigo-600" data-query="UU PDP">PDP</button>
-          <button type="button" class="category-chip rounded-full border border-slate-200 px-3 py-1.5 text-sm text-slate-600 hover:border-indigo-500 hover:text-indigo-600" data-query="Peraturan Pemerintah">PP</button>
-          <button type="button" class="category-chip rounded-full border border-slate-200 px-3 py-1.5 text-sm text-slate-600 hover:border-indigo-500 hover:text-indigo-600" data-query="Peraturan Presiden">Perpres</button>
-        </div>
-      </div>
-
-      <div class="space-y-3">
-        <div class="flex items-center justify-between">
-          <h3 class="text-base font-bold text-slate-700">Hasil Pencarian</h3>
-          <span id="resultSummary" class="text-xs text-slate-500">Belum ada pencarian</span>
-        </div>
-        <div id="searchResults" class="space-y-2"></div>
-        <div id="searchPagination"></div>
-      </div>
-    </section>
-
-    <section id="view-baca" data-view="baca" class="hidden space-y-4">
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-        <h3 class="font-bold text-slate-800">Baca Pasal</h3>
-        <p class="text-sm text-slate-600 mt-2">Pilih satu undang-undang dari beranda untuk melihat rincian pasal dan penjelasan singkat.</p>
-      </div>
-      <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-        <p class="text-sm font-semibold text-indigo-700">Tips hari ini</p>
-        <p class="text-sm text-slate-600 mt-1">Gunakan fitur pencarian untuk menemukan pasal yang sedang Anda butuhkan.</p>
-      </div>
-    </section>
-
-    <section id="view-bookmark" data-view="bookmark" class="hidden space-y-4">
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-        <h3 class="font-bold text-slate-800">Bookmark</h3>
-        <p class="text-sm text-slate-600 mt-2">Belum ada bookmark. Ketuk salah satu undang-undang untuk menandainya nanti.</p>
-      </div>
-    </section>
-
-    <section id="view-profil" data-view="profil" class="hidden space-y-4">
-      <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-        <h3 class="font-bold text-slate-800">Profil</h3>
-        <p class="text-sm text-slate-600 mt-2">Mode pengguna demo untuk menampilkan pengalaman membaca hukum secara sederhana dan cepat.</p>
-      </div>
-    </section>
-  </main>
-
-  <!-- BOTTOM NAVIGATION -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-2 px-6 flex justify-around items-center text-xs text-slate-500 z-20">
-    <button type="button" data-nav="home" class="flex flex-col items-center text-indigo-600 font-semibold">
-      <span class="text-base">🏠</span>
-      <span>Beranda</span>
-    </button>
-    <button type="button" data-nav="baca" class="flex flex-col items-center hover:text-slate-800">
-      <span class="text-base">📖</span>
-      <span>Baca</span>
-    </button>
-    <button type="button" data-nav="bookmark" class="flex flex-col items-center hover:text-slate-800">
-      <span class="text-base">🔖</span>
-      <span>Bookmark</span>
-    </button>
-    <button type="button" data-nav="profil" class="flex flex-col items-center hover:text-slate-800">
-      <span class="text-base">👤</span>
-      <span>Profil</span>
-    </button>
-  </nav>
-
-  <!-- MODAL -->
-  <div id="detailModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-30">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl p-5">
-      <div class="flex justify-between items-start gap-3">
-        <div>
-          <p class="text-xs uppercase tracking-wider text-indigo-500 font-semibold">Detail Peraturan</p>
-          <h3 id="modalTitle" class="text-lg font-bold text-slate-800 mt-1">Judul</h3>
-        </div>
-        <button id="closeModal" type="button" class="text-slate-400 text-xl leading-none">×</button>
-      </div>
-      <div id="modalBody" class="mt-4 text-sm text-slate-600"></div>
-    </div>
-  </div>
-
-  <script>
-    const views = {
-      home: document.getElementById('view-home'),
-      baca: document.getElementById('view-baca'),
-      bookmark: document.getElementById('view-bookmark'),
-      profil: document.getElementById('view-profil')
-    };
-
-    const modal = document.getElementById('detailModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalBody = document.getElementById('modalBody');
-    const closeModalButton = document.getElementById('closeModal');
-    const liveSearchInput = document.getElementById('liveSearchInput');
-    const searchButton = document.getElementById('searchButton');
-    const searchResults = document.getElementById('searchResults');
-    const searchPagination = document.getElementById('searchPagination');
-    const resultSummary = document.getElementById('resultSummary');
-    const SEARCH_PROXY = 'https://r.jina.ai/http://jdihn.go.id';
-    const LEGAL_API_FALLBACK = 'https://r.jina.ai/http://www.google.com/search?q=';
-    const PAGE_SIZE = 6;
-    let currentResults = [];
-    let currentQuery = '';
-    let currentPage = 1;
-    let searchTimer = null;
-
-    function escapeHtml(value) {
-      return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/\"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-
-    function switchView(viewName) {
-      Object.entries(views).forEach(([name, section]) => {
-        section.classList.toggle('hidden', name !== viewName);
-      });
-
-      document.querySelectorAll('[data-nav]').forEach(button => {
-        const isActive = button.dataset.nav === viewName;
-        button.classList.toggle('text-indigo-600', isActive);
-        button.classList.toggle('font-semibold', isActive);
-        button.classList.toggle('text-slate-500', !isActive);
-      });
-    }
-
-    function openModal(title, content) {
-      modalTitle.textContent = title;
-      modalBody.innerHTML = content;
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    function closeModal() {
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function parseJdihnResults(text) {
-      const items = [];
-      const seen = new Set();
-      const matches = [...text.matchAll(/\[(.*?)\]\((https:\/\/jdihn\.go\.id\/doc\/[^)]+)\)/g)];
-
-      matches.forEach(match => {
-        const title = (match[1] || '').replace(/\s+/g, ' ').trim();
-        const url = match[2];
-        if (title && !seen.has(url)) {
-          seen.add(url);
-          items.push({ title, url, snippet: '' });
-        }
-      });
-
-      if (items.length === 0) {
-        const lines = text
-          .split(/\n|\r/)
-          .map(line => line.trim())
-          .filter(Boolean)
-          .filter(line => line.includes('jdihn.go.id/doc/'));
-
-        lines.forEach(line => {
-          const urlMatch = line.match(/https:\/\/jdihn\.go\.id\/doc\/[^\s)]+/);
-          if (urlMatch && !seen.has(urlMatch[0])) {
-            seen.add(urlMatch[0]);
-            items.push({ title: line.replace(/https:\/\/jdihn\.go\.id\/doc\/[^\s)]+/, '').replace(/\s+/g, ' ').trim() || 'Dokumen hukum', url: urlMatch[0], snippet: '' });
-          }
-        });
-      }
-
-      return items.slice(0, PAGE_SIZE);
-    }
-
-    function renderSearchResults(items, page, query) {
-      currentResults = items;
-      currentPage = page;
-      currentQuery = query;
-
-      if (!items.length) {
-        searchResults.innerHTML = '<div class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-500">Tidak ada hasil. Coba kata kunci lain seperti UU, PP, Perpres, KUHP, atau UUD.</div>';
-        searchPagination.innerHTML = '';
-        resultSummary.textContent = 'Tidak ada hasil';
-        return;
-      }
-
-      searchResults.innerHTML = items.map(item => `
-        <button type="button" class="w-full text-left rounded-xl border border-slate-200 bg-slate-50 p-3 hover:border-indigo-500" data-url="${item.url}" data-title="${escapeHtml(item.title)}">
-          <p class="font-semibold text-slate-800">${escapeHtml(item.title)}</p>
-          <p class="text-xs text-slate-500 mt-1">Sumber resmi JDIHN • ${escapeHtml(item.url)}</p>
-        </button>
-      `).join('');
-
-      searchPagination.innerHTML = `
-        <div class="flex items-center justify-between gap-2">
-          <button type="button" class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600" data-page="${Math.max(1, page - 1)}">← Sebelumnya</button>
-          <span class="text-sm text-slate-500">Halaman ${page}</span>
-          <button type="button" class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600" data-page="${page + 1}">Berikutnya →</button>
-        </div>
-      `;
-
-      resultSummary.textContent = `${items.length} dokumen • ${query}`;
-
-      searchPagination.querySelectorAll('[data-page]').forEach(button => {
-        button.addEventListener('click', () => searchOfficialLaws(query, Number(button.dataset.page)));
-      });
-
-      searchResults.querySelectorAll('[data-url]').forEach(button => {
-        button.addEventListener('click', async () => {
-          await openOfficialLaw(button.dataset.url, button.dataset.title);
-        });
-      });
-    }
-
-    async function searchOfficialLaws(query, page = 1) {
-      const normalizedQuery = query.trim();
-      if (!normalizedQuery) {
-        searchResults.innerHTML = '<div class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-500">Masukkan kata kunci atau pilih kategori untuk memulai pencarian.</div>';
-        searchPagination.innerHTML = '';
-        resultSummary.textContent = 'Belum ada pencarian';
-        return;
-      }
-
-      searchResults.innerHTML = '<div class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-500">Mencari dokumen resmi dari JDIH...</div>';
-      searchPagination.innerHTML = '';
-      resultSummary.textContent = 'Mencari...';
-
-      const searchUrls = [
-        `${SEARCH_PROXY}/search?c=all&q=${encodeURIComponent(normalizedQuery)}&page=${page}`,
-        `${LEGAL_API_FALLBACK}${encodeURIComponent(`${normalizedQuery} site:jdihn.go.id`)}`
-      ];
-
-      for (const url of searchUrls) {
-        try {
-          const response = await fetch(url, { headers: { Accept: 'text/plain' } });
-          if (!response.ok) continue;
-          const text = await response.text();
-          const items = parseJdihnResults(text);
-          if (items.length) {
-            renderSearchResults(items, page, normalizedQuery);
-            return;
-          }
-        } catch (error) {
-          continue;
-        }
-      }
-
-      searchResults.innerHTML = '<div class="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">Koneksi ke sumber resmi sedang tidak tersedia. Coba beberapa saat lagi atau gunakan kata kunci lain.</div>';
-      searchPagination.innerHTML = '';
-      resultSummary.textContent = 'Gagal terhubung';
-    }
-
-    async function openOfficialLaw(url, title) {
-      openModal(title, `
-        <div class="space-y-3">
-          <p class="text-xs uppercase tracking-wider text-slate-400">Dokumen resmi</p>
-          <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600">Memuat teks dokumen dari sumber resmi. Jika sumber terbatas, Anda hanya akan melihat tautan resmi.</div>
-        </div>
-      `);
-
-      try {
-        const detailUrl = `https://r.jina.ai/http://${url.replace('https://', '')}`;
-        const response = await fetch(detailUrl, { headers: { Accept: 'text/plain' } });
-        if (!response.ok) throw new Error('Detail tidak tersedia');
-
-        const text = await response.text();
-        const cleaned = text.replace(/[\u0000-\u001f]+/g, '').replace(/\s{3,}/g, '\n\n').trim();
-        const excerpt = cleaned.length > 6000 ? `${cleaned.slice(0, 6000)}\n\n[... teks dipotong untuk tampilan singkat]` : cleaned;
-
-        modalBody.innerHTML = `
-          <div class="space-y-3">
-            <p class="text-xs uppercase tracking-wider text-slate-400">Dokumen resmi</p>
-            <p class="text-sm text-slate-600">${escapeHtml(url)}</p>
-            <div class="max-h-[60vh] overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm leading-relaxed whitespace-pre-line">${escapeHtml(excerpt)}</div>
-          </div>
-        `;
-      } catch (error) {
-        modalBody.innerHTML = `
-          <div class="space-y-3">
-            <p class="text-xs uppercase tracking-wider text-slate-400">Dokumen resmi</p>
-            <p class="text-sm text-slate-600">Teks lengkap belum tersedia melalui proxy saat ini. Anda tetap dapat membuka tautan resmi dari hasil pencarian.</p>
-          </div>
-        `;
-      }
-    }
-
-    function debounceSearch() {
-      clearTimeout(searchTimer);
-      searchTimer = setTimeout(() => {
-        searchOfficialLaws(liveSearchInput.value, 1);
-      }, 350);
-    }
-
-    document.querySelectorAll('[data-nav]').forEach(button => {
-      button.addEventListener('click', () => switchView(button.dataset.nav));
-    });
-
-    searchButton.addEventListener('click', () => searchOfficialLaws(liveSearchInput.value, 1));
-    liveSearchInput.addEventListener('input', debounceSearch);
-    liveSearchInput.addEventListener('keydown', event => {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        searchOfficialLaws(liveSearchInput.value, 1);
-      }
-    });
-
-    document.querySelectorAll('.category-chip').forEach(button => {
-      button.addEventListener('click', () => {
-        liveSearchInput.value = button.dataset.query;
-        searchOfficialLaws(button.dataset.query, 1);
-      });
-    });
-
-    document.getElementById('searchTrigger').addEventListener('click', () => {
-      openModal('Pencarian Hukum Resmi', `
-        <div class="space-y-3">
-          <p class="text-sm text-slate-500">Cari dokumen resmi UU, PP, Perpres, KUHP, UUD 1945, dan lainnya dari sumber JDIH.</p>
-          <input id="modalSearchInput" type="text" placeholder="contoh: uu ite, uud 1945" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <button id="modalSearchButton" type="button" class="w-full bg-indigo-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700">Cari dokumen</button>
-          <div id="modalSearchResults" class="space-y-2"></div>
-          <div id="modalSearchPagination"></div>
-        </div>
-      `);
-
-      const modalSearchInput = document.getElementById('modalSearchInput');
-      const modalSearchButton = document.getElementById('modalSearchButton');
-      const modalSearchResults = document.getElementById('modalSearchResults');
-      const modalSearchPagination = document.getElementById('modalSearchPagination');
-
-      function renderModalResults(items, page, query) {
-        if (!items.length) {
-          modalSearchResults.innerHTML = '<div class="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-500">Tidak ada hasil.</div>';
-          modalSearchPagination.innerHTML = '';
-          return;
-        }
-
-        modalSearchResults.innerHTML = items.map(item => `
-          <button type="button" class="w-full text-left rounded-lg border border-slate-200 bg-slate-50 p-3 hover:border-indigo-500" data-url="${item.url}" data-title="${escapeHtml(item.title)}">
-            <p class="font-semibold text-slate-800">${escapeHtml(item.title)}</p>
-            <p class="text-xs text-slate-500 mt-1">${escapeHtml(item.url)}</p>
-          </button>
-        `).join('');
-
-        modalSearchPagination.innerHTML = `
-          <div class="flex items-center justify-between gap-2 pt-2">
-            <button type="button" class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600" data-page="${Math.max(1, page - 1)}">←</button>
-            <span class="text-sm text-slate-500">Halaman ${page}</span>
-            <button type="button" class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600" data-page="${page + 1}">→</button>
-          </div>
-        `;
-
-        modalSearchPagination.querySelectorAll('[data-page]').forEach(button => {
-          button.addEventListener('click', () => runModalSearch(query, Number(button.dataset.page)));
-        });
-
-        modalSearchResults.querySelectorAll('[data-url]').forEach(button => {
-          button.addEventListener('click', async () => {
-            await openOfficialLaw(button.dataset.url, button.dataset.title);
-          });
-        });
-      }
-
-      async function runModalSearch(query, page = 1) {
-        const normalizedQuery = query.trim();
-        if (!normalizedQuery) {
-          modalSearchResults.innerHTML = '<div class="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-500">Masukkan kata kunci.</div>';
-          return;
-        }
-
-        modalSearchResults.innerHTML = '<div class="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-500">Mencari...</div>';
-        modalSearchPagination.innerHTML = '';
-
-        const searchUrls = [
-          `${SEARCH_PROXY}/search?c=all&q=${encodeURIComponent(normalizedQuery)}&page=${page}`,
-          `${LEGAL_API_FALLBACK}${encodeURIComponent(`${normalizedQuery} site:jdihn.go.id`)}`
+    <script>
+        const databaseHukum = [
+            { judul: "UUD 1945 - Pasal 1", isi: "(1) Negara Indonesia ialah Negara Kesatuan, yang berbentuk Republik. (2) Kedaulatan berada di tangan rakyat dan dilaksanakan menurut Undang-Undang Dasar. (3) Negara Indonesia adalah negara hukum.", kat: "UUD 1945" },
+            { judul: "UUD 1945 - Pasal 27", isi: "(1) Segala warga negara bersamaan kedudukannya di dalam hukum dan pemerintahan. (2) Tiap-tiap warga negara berhak atas pekerjaan dan penghidupan yang layak bagi kemanusiaan.", kat: "UUD 1945" },
+            { judul: "KUHP - Pasal 362 (Pencurian)", isi: "Barang siapa mengambil barang sesuatu, yang seluruhnya atau sebagian kepunyaan orang lain, dengan maksud untuk dimiliki secara melawan hukum, diancam karena pencurian, dengan pidana penjara paling lama lima tahun.", kat: "KUHP" },
+            { judul: "KUHP - Pasal 378 (Penipuan)", isi: "Barang siapa dengan maksud untuk menguntungkan diri sendiri atau orang lain secara melawan hukum, dengan memakai nama palsu atau martabat palsu, dengan tipu muslihat, diancam karena penipuan dengan pidana penjara paling lama empat tahun.", kat: "KUHP" },
+            { judul: "UU ITE - Pasal 27A (Pencemaran Nama Baik)", isi: "Setiap Orang dengan sengaja menyerang kehormatan atau nama baik orang lain dengan menuduhkan suatu hal melalui Sistem Elektronik dengan maksud supaya hal tersebut diketahui umum.", kat: "UU ITE" },
+            { judul: "UU Perlindungan Data Pribadi (PDP) - Pasal 65", isi: "Setiap Orang dilarang secara melawan hukum memperoleh atau mengumpulkan Data Pribadi yang bukan miliknya dengan maksud untuk menguntungkan diri sendiri atau orang lain.", kat: "UU ITE" },
+            { judul: "UU Ketenagakerjaan - Pasal 77", isi: "(1) Setiap pengusaha wajib melaksanakan ketentuan waktu kerja. (2) Waktu kerja sebagaimana dimaksud meliputi 7 jam 1 hari dan 40 jam 1 minggu untuk 6 hari kerja, atau 8 jam 1 hari dan 40 jam 1 minggu untuk 5 hari kerja.", kat: "Ketenagakerjaan" }
         ];
 
-        for (const url of searchUrls) {
-          try {
-            const response = await fetch(url, { headers: { Accept: 'text/plain' } });
-            if (!response.ok) continue;
-            const text = await response.text();
-            const items = parseJdihnResults(text);
-            if (items.length) {
-              renderModalResults(items, page, normalizedQuery);
-              return;
+        function renderResults(data) {
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = '';
+            if(data.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#718096;">Tidak ada peraturan yang cocok dengan pencarian Anda.</p>';
+                return;
             }
-          } catch (error) {
-            continue;
-          }
+            data.forEach(item => {
+                container.innerHTML += `
+                    <div class="card">
+                        <h3>${item.judul}</h3>
+                        <p>${item.isi}</p>
+                        <span class="source-tag">Kategori: ${item.kat}</span>
+                    </div>
+                `;
+            });
         }
 
-        modalSearchResults.innerHTML = '<div class="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">Sumber pencarian tidak tersedia saat ini.</div>';
-      }
-
-      modalSearchButton.addEventListener('click', () => runModalSearch(modalSearchInput.value, 1));
-      modalSearchInput.addEventListener('keydown', event => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          runModalSearch(modalSearchInput.value, 1);
+        function searchLaw() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = databaseHukum.filter(item => 
+                item.judul.toLowerCase().includes(query) || item.isi.toLowerCase().includes(query)
+            );
+            renderResults(filtered);
         }
-      });
-    });
 
-    closeModalButton.addEventListener('click', closeModal);
-    modal.addEventListener('click', event => {
-      if (event.target === modal) closeModal();
-    });
+        function filterCat(category) {
+            const filtered = databaseHukum.filter(item => item.kat === category);
+            renderResults(filtered);
+        }
 
-    switchView('home');
-  </script>
-
+        // Tampilkan semua saat pertama dibuka
+        renderResults(databaseHukum);
+    </script>
 </body>
 </html>
