@@ -3,151 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UU Digital Indonesia</title>
+    <title>AI Assistant Hukum & UU Digital</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: #f1f5f9; color: #0f172a; min-height: 100vh; padding-bottom: 3rem; }
-        header { background: #1e1b4b; color: white; padding: 2rem 1rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.3rem; }
-        header p { color: #a5b4fc; font-size: 0.95rem; }
+        body { background-color: #f8fafc; color: #1e293b; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; padding: 2.5rem 1rem; text-align: center; }
+        header h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.4rem; }
+        header p { color: #c7d2fe; font-size: 0.95rem; }
+
+        .container { max-width: 800px; width: 92%; margin: -1.5rem auto 2rem auto; flex: 1; }
+        .card { background: white; padding: 1.5rem; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
         
-        .container { max-width: 850px; width: 92%; margin: -1.5rem auto 0 auto; }
-        .search-card { background: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
-        .search-box { display: flex; gap: 8px; margin-bottom: 1rem; }
-        input[type="text"] { flex: 1; padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; }
-        input[type="text"]:focus { border-color: #4f46e5; }
+        .api-input-group { margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px dashed #e2e8f0; }
+        .api-input-group label { font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 6px; }
         
-        .categories { display: flex; gap: 8px; flex-wrap: wrap; }
-        .badge { background: #f8fafc; color: #475569; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid #e2e8f0; }
-        .badge:hover, .badge.active { background: #4f46e5; color: white; border-color: #4f46e5; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; outline: none; }
+        input[type="text"]:focus, input[type="password"]:focus { border-color: #4f46e5; }
         
-        .results-info { font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem; font-weight: 500; }
-        .results { display: flex; flex-direction: column; gap: 0.75rem; }
+        .search-box { display: flex; gap: 8px; margin-top: 8px; }
+        button { padding: 12px 24px; background: #4f46e5; color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        button:hover { background: #4338ca; }
         
-        .law-item { background: white; border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-        .law-header { padding: 1rem 1.25rem; background: white; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: #1e1b4b; }
-        .law-header:hover { background: #f8fafc; }
-        .law-tag { font-size: 0.75rem; background: #eef2ff; color: #4f46e5; padding: 2px 8px; border-radius: 4px; font-weight: 700; margin-left: 8px; }
-        .law-body { padding: 1rem 1.25rem; background: #fafafa; border-top: 1px solid #f1f5f9; display: none; font-size: 0.95rem; line-height: 1.6; color: #334155; }
-        .law-item.open .law-body { display: block; }
-        .arrow { transition: transform 0.2s; font-size: 0.8rem; color: #94a3b8; }
-        .law-item.open .arrow { transform: rotate(180deg); }
+        .result-box { background: white; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; line-height: 1.7; display: none; }
+        .result-box h3 { color: #1e1b4b; margin-bottom: 0.75rem; border-bottom: 2px solid #eef2ff; padding-bottom: 0.5rem; }
+        .loading { text-align: center; color: #6366f1; font-weight: 600; display: none; padding: 2rem; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🏛️ Portal UU Digital</h1>
-        <p>Database Peraturan & Kitab Hukum Utama Indonesia</p>
+        <h1>🤖 AI Konsultan UU Digital</h1>
+        <p>Tanyakan masalah hukum atau undang-undang apa saja di Indonesia</p>
     </header>
 
     <div class="container">
-        <div class="search-card">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Cari pasal atau kata kunci (misal: pencurian, PHK, hoaks, HAM)..." onkeyup="filterData()">
+        <div class="card">
+            <!-- Tempat Masukin API Key -->
+            <div class="api-input-group">
+                <label>API Key Gemini (Google AI Studio):</label>
+                <input type="password" id="apiKeyInput" placeholder="Tempel API Key dari Google AI Studio di sini...">
             </div>
-            <div class="categories">
-                <span class="badge active" onclick="setCategory('Semua', this)">Semua</span>
-                <span class="badge" onclick="setCategory('UUD 1945', this)">UUD 1945</span>
-                <span class="badge" onclick="setCategory('KUHP', this)">KUHP (Pidana)</span>
-                <span class="badge" onclick="setCategory('KUHPerdata', this)">KUHPerdata</span>
-                <span class="badge" onclick="setCategory('UU ITE', this)">UU ITE & PDP</span>
-                <span class="badge" onclick="setCategory('Ketenagakerjaan', this)">Ketenagakerjaan</span>
+
+            <!-- Kolom Pertanyaan -->
+            <label style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Pertanyaan / Cari Pasal:</label>
+            <div class="search-box">
+                <input type="text" id="userInput" placeholder="Contoh: Apa bunyi UU ITE pencemaran nama baik? Atau curhat kasus..." onkeyup="if(event.key==='Enter') askAI()">
+                <button onclick="askAI()">Tanya AI</button>
             </div>
         </div>
 
-        <div class="results-info" id="infoText">Loading data...</div>
-        <div class="results" id="resultsContainer"></div>
+        <div class="loading" id="loadingState">⏳ AI sedang mencari pasal dan menganalisis undang-undang...</div>
+        
+        <div class="result-box" id="resultContainer">
+            <h3>Hasil Analisis & Pasal Hukum:</h3>
+            <div id="aiResponse"></div>
+        </div>
     </div>
 
     <script>
-        const databaseHukum = [
-            // UUD 1945
-            { judul: "UUD 1945 - Pasal 1 (Bentuk & Kedaulatan)", isi: "(1) Negara Indonesia ialah Negara Kesatuan, yang berbentuk Republik.<br>(2) Kedaulatan berada di tangan rakyat dan dilaksanakan menurut UUD.<br>(3) Negara Indonesia adalah negara hukum.", kat: "UUD 1945" },
-            { judul: "UUD 1945 - Pasal 27 (Kedudukan Hukum & Kerja)", isi: "(1) Segala warga negara bersamaan kedudukannya di dalam hukum dan pemerintahan.<br>(2) Tiap-tiap warga negara berhak atas pekerjaan dan penghidupan yang layak bagi kemanusiaan.", kat: "UUD 1945" },
-            { judul: "UUD 1945 - Pasal 28A (Hak Hidup)", isi: "Setiap orang berhak untuk hidup serta berhak mempertahankan hidup dan menghidupkan kehidupannya.", kat: "UUD 1945" },
-            { judul: "UUD 1945 - Pasal 28D (Kepastian Hukum)", isi: "(1) Setiap orang berhak atas pengakuan, jaminan, perlindungan, dan kepastian hukum yang adil serta perlakuan yang sama di hadapan hukum.", kat: "UUD 1945" },
-            { judul: "UUD 1945 - Pasal 28E (Bebas Beragama & Berpendapat)", isi: "(1) Setiap orang bebas memeluk agama dan beribadat menurut agamanya.<br>(3) Setiap orang berhak atas kebebasan berserikat, berkumpul, dan mengeluarkan pendapat.", kat: "UUD 1945" },
+        async function askAI() {
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            const prompt = document.getElementById('userInput').value.trim();
+            const loading = document.getElementById('loadingState');
+            const resultBox = document.getElementById('resultContainer');
+            const aiResponse = document.getElementById('aiResponse');
 
-            // KUHP (PIDANA)
-            { judul: "KUHP - Pasal 338 (Pembunuhan)", isi: "Barang siapa dengan sengaja merampas nyawa orang lain, diancam karena pembunuhan dengan pidana penjara paling lama lima belas tahun.", kat: "KUHP" },
-            { judul: "KUHP - Pasal 351 (Penganiayaan)", isi: "(1) Penganiayaan diancam dengan pidana penjara paling lama dua tahun delapan bulan.<br>(2) Jika perbuatan mengakibatkan luka berat, diancam penjara paling lama lima tahun.", kat: "KUHP" },
-            { judul: "KUHP - Pasal 362 (Pencurian Biasa)", isi: "Barang siapa mengambil barang sesuatu, yang seluruhnya atau sebagian kepunyaan orang lain, dengan maksud untuk dimiliki secara melawan hukum, diancam karena pencurian dengan pidana penjara paling lama lima tahun.", kat: "KUHP" },
-            { judul: "KUHP - Pasal 368 (Pemerasan & Pengancaman)", isi: "Barang siapa dengan maksud untuk menguntungkan diri sendiri secara melawan hukum, memaksa seseorang dengan kekerasan atau ancaman kekerasan untuk memberikan barang sesuatu, diancam dengan pidana penjara paling lama sembilan tahun.", kat: "KUHP" },
-            { judul: "KUHP - Pasal 372 (Penggelapan)", isi: "Barang siapa dengan sengaja dan melawan hukum mengaku sebagai milik sendiri barang sesuatu yang ada dalam kekuasaannya bukan karena kejahatan, diancam karena penggelapan dengan pidana penjara paling lama empat tahun.", kat: "KUHP" },
-            { judul: "KUHP - Pasal 378 (Penipuan)", isi: "Barang siapa dengan maksud untuk menguntungkan diri sendiri secara melawan hukum dengan memakai nama palsu, tipu muslihat, atau kebohongan, membujuk orang lain menyerahkan barang, diancam karena penipuan dengan pidana penjara paling lama empat tahun.", kat: "KUHP" },
-
-            // KUHPERDATA
-            { judul: "KUHPerdata - Pasal 1233 (Sumber Perikatan)", isi: "Perikatan lahir karena suatu persetujuan atau karena undang-undang.", kat: "KUHPerdata" },
-            { judul: "KUHPerdata - Pasal 1320 (Syarat Sah Perjanjian)", isi: "Supaya terjadi persetujuan yang sah, diperlukan empat syarat:<br>1. Kesepakatan mereka yang mengikatkan dirinya;<br>2. Kecakapan untuk membuat suatu perikatan;<br>3. Suatu pokok persoalan tertentu;<br>4. Suatu sebab yang tidak terlarang.", kat: "KUHPerdata" },
-            { judul: "KUHPerdata - Pasal 1338 (Asas Pacta Sunt Servanda)", isi: "Semua persetujuan yang dibuat sesuai dengan undang-undang berlaku sebagai undang-undang bagi mereka yang membuatnya.", kat: "KUHPerdata" },
-            { judul: "KUHPerdata - Pasal 1365 (Perbuatan Melawan Hukum)", isi: "Tiap perbuatan yang melanggar hukum dan membawa kerugian kepada orang lain, mewajibkan orang yang menimbulkan kerugian itu karena salahnya untuk menggantikan kerugian tersebut.", kat: "KUHPerdata" },
-
-            // UU ITE & PDP
-            { judul: "UU ITE - Pasal 27A (Pencemaran Nama Baik)", isi: "Setiap Orang dengan sengaja menyerang kehormatan atau nama baik orang lain dengan menuduhkan suatu hal melalui Sistem Elektronik dengan maksud supaya diketahui umum.", kat: "UU ITE" },
-            { judul: "UU ITE - Pasal 28 (Hoaks & Ujaran Kebencian SARA)", isi: "(1) Menyebarkan berita bohong dan menyesatkan yang merugikan konsumen.<br>(2) Menyebarkan informasi yang ditujukan untuk menimbulkan rasa kebencian berdasarkan SARA.", kat: "UU ITE" },
-            { judul: "UU PDP - Pasal 65 (Perlindungan Data Pribadi)", isi: "(1) Dilarang secara melawan hukum memperoleh atau mengumpulkan Data Pribadi yang bukan miliknya.<br>(2) Dilarang secara melawan hukum mengungkapkan Data Pribadi milik orang lain.", kat: "UU ITE" },
-
-            // KETENAGAKERJAAN
-            { judul: "UU Ketenagakerjaan - Pasal 77 (Jam Kerja Resmi)", isi: "Waktu kerja meliputi 7 jam 1 hari (40 jam 1 minggu) untuk 6 hari kerja, atau 8 jam 1 hari (40 jam 1 minggu) untuk 5 hari kerja.", kat: "Ketenagakerjaan" },
-            { judul: "UU Ketenagakerjaan - Pasal 79 (Cuti Tahunan & Istirahat)", isi: "Pengusaha wajib memberi waktu istirahat dan cuti. Cuti tahunan sekurang-kurangnya 12 hari kerja setelah pekerja bekerja selama 12 bulan secara terus menerus.", kat: "Ketenagakerjaan" },
-            { judul: "UU Ketenagakerjaan - Pasal 156 (Pesangon PHK)", isi: "Dalam hal terjadi Pemutusan Hubungan Kerja (PHK), pengusaha diwajibkan membayar uang pesangon dan/atau uang penghargaan masa kerja.", kat: "Ketenagakerjaan" }
-        ];
-
-        let activeCategory = 'Semua';
-
-        function renderResults(data) {
-            const container = document.getElementById('resultsContainer');
-            const infoText = document.getElementById('infoText');
-            container.innerHTML = '';
-            
-            infoText.innerText = `Menampilkan ${data.length} pasal hukum`;
-
-            if(data.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:2rem; background:white; border-radius:10px; color:#64748b;">Pasal tidak ditemukan. Coba gunakan kata kunci lain.</div>';
+            if (!apiKey) {
+                alert("Masukkan API Key Gemini kamu dulu ya!");
+                return;
+            }
+            if (!prompt) {
+                alert("Ketik pertanyaan hukum atau pasal yang mau dicari!");
                 return;
             }
 
-            data.forEach((item, index) => {
-                container.innerHTML += `
-                    <div class="law-item" id="item-${index}">
-                        <div class="law-header" onclick="toggleItem(${index})">
-                            <div>
-                                ${item.judul}
-                                <span class="law-tag">${item.kat}</span>
-                            </div>
-                            <span class="arrow">▼</span>
-                        </div>
-                        <div class="law-body">
-                            ${item.isi}
-                        </div>
-                    </div>
-                `;
-            });
-        }
+            loading.style.display = 'block';
+            resultBox.style.display = 'none';
 
-        function toggleItem(index) {
-            document.getElementById(`item-${index}`).classList.toggle('open');
-        }
+            const systemInstruction = "Kamu adalah ahli hukum Indonesia. Jawab pertanyaan pengguna dengan sebutkan nama Undang-Undang, nomor pasal, beserta penjelasan hukum ringkas yang mudah dipahami. Fokus pada hukum di Republik Indonesia.";
 
-        function setCategory(cat, element) {
-            activeCategory = cat;
-            document.querySelectorAll('.badge').forEach(b => b.classList.remove('active'));
-            element.classList.add('active');
-            filterData();
-        }
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: `${systemInstruction}\n\nPertanyaan Pengguna: ${prompt}` }]
+                        }]
+                    })
+                });
 
-        function filterData() {
-            const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            const filtered = databaseHukum.filter(item => {
-                const matchCat = (activeCategory === 'Semua' || item.kat === activeCategory);
-                const matchQuery = item.judul.toLowerCase().includes(query) || item.isi.toLowerCase().includes(query);
-                return matchCat && matchQuery;
-            });
-            renderResults(filtered);
-        }
+                const data = await response.json();
+                loading.style.display = 'none';
 
-        renderResults(databaseHukum);
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    let textResult = data.candidates[0].content.parts[0].text;
+                    // Format teks sederhana
+                    textResult = textResult.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+                    aiResponse.innerHTML = textResult;
+                    resultBox.style.display = 'block';
+                } else {
+                    alert("Gagal mengambil data dari AI. Cek API Key kamu!");
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                alert("Error: " + error.message);
+            }
+        }
     </script>
 </body>
 </html>
