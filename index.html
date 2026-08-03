@@ -5,23 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UU Digital - Portal Hukum Indonesia</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f4f7f6; color: #333; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        header { background: #1a365d; color: white; padding: 1.5rem; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
-        .container { flex: 1; display: flex; flex-direction: column; max-width: 900px; width: 100%; margin: 0 auto; padding: 1rem; overflow-y: auto; }
-        .search-box { display: flex; gap: 10px; margin-bottom: 1.5rem; }
-        input[type="text"] { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; outline: none; }
-        button { padding: 12px 20px; background: #2b6cb0; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; }
-        button:hover { background: #2c5282; }
-        .categories { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
-        .badge { background: #e2e8f0; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; border: 1px solid #cbd5e0; }
-        .badge:hover { background: #cbd5e0; }
-        .results { display: flex; flex-direction: column; gap: 1rem; padding-bottom: 2rem; }
-        .card { background: white; padding: 1.2rem; border-radius: 8px; border-left: 5px solid #2b6cb0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .card h3 { color: #2c5282; margin-bottom: 0.5rem; }
-        .card p { font-size: 0.95rem; line-height: 1.5; color: #4a5568; }
-        .source-tag { display: inline-block; margin-top: 8px; font-size: 0.75rem; color: #718096; background: #edf2f7; padding: 2px 8px; border-radius: 4px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #f8fafc; color: #1e293b; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: #1e1b4b; color: white; padding: 1.5rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.25rem; }
+        header p { color: #a5b4fc; font-size: 0.9rem; }
+        .container { flex: 1; max-width: 800px; width: 100%; margin: 0 auto; padding: 1.5rem 1rem; }
+        .search-card { background: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
+        .search-box { display: flex; gap: 8px; margin-bottom: 1rem; }
+        input[type="text"] { flex: 1; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; outline: none; }
+        input[type="text"]:focus { border-color: #6366f1; ring: 2px #c7d2fe; }
+        button { padding: 12px 24px; background: #4f46e5; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: #4338ca; }
+        .categories { display: flex; gap: 8px; flex-wrap: wrap; }
+        .badge { background: #f1f5f9; color: #475569; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s; }
+        .badge:hover { background: #e0e7ff; color: #3730a3; border-color: #c7d2fe; }
+        .results { display: flex; flex-direction: column; gap: 1rem; }
+        .card { background: white; padding: 1.25rem; border-radius: 10px; border-left: 4px solid #4f46e5; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card h3 { color: #1e1b4b; font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .card p { font-size: 0.95rem; line-height: 1.6; color: #334155; }
+        .source-tag { display: inline-block; margin-top: 10px; font-size: 0.75rem; font-weight: 600; color: #6366f1; background: #eef2ff; padding: 3px 10px; border-radius: 6px; }
     </style>
 </head>
 <body>
@@ -32,40 +35,45 @@
     </header>
 
     <div class="container">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Cari pasal, UU, KUHP, ITE, Ketenagakerjaan...">
-            <button onclick="searchLaw()">Cari</button>
+        <div class="search-card">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Ketik kata kunci (misal: pidana, kerja, data, pencurian)..." onkeyup="if(event.key==='Enter') searchLaw()">
+                <button onclick="searchLaw()">Cari</button>
+            </div>
+            <div class="categories">
+                <span class="badge" onclick="filterCat('UUD 1945')">UUD 1945</span>
+                <span class="badge" onclick="filterCat('KUHP')">KUHP</span>
+                <span class="badge" onclick="filterCat('KUHPerdata')">KUHPerdata</span>
+                <span class="badge" onclick="filterCat('UU ITE')">UU ITE</span>
+                <span class="badge" onclick="filterCat('Ketenagakerjaan')">Ketenagakerjaan</span>
+                <span class="badge" onclick="renderResults(databaseHukum)">Tampilkan Semua</span>
+            </div>
         </div>
 
-        <div class="categories">
-            <span class="badge" onclick="filterCat('UUD 1945')">UUD 1945</span>
-            <span class="badge" onclick="filterCat('KUHP')">KUHP (Pidana)</span>
-            <span class="badge" onclick="filterCat('KUHPerdata')">KUHPerdata</span>
-            <span class="badge" onclick="filterCat('UU ITE')">UU ITE & PDP</span>
-            <span class="badge" onclick="filterCat('Ketenagakerjaan')">Ketenagakerjaan</span>
-        </div>
-
-        <div class="results" id="resultsContainer">
-            <!-- Data akan muncul di sini -->
-        </div>
+        <div class="results" id="resultsContainer"></div>
     </div>
 
     <script>
         const databaseHukum = [
-            { judul: "UUD 1945 - Pasal 1", isi: "(1) Negara Indonesia ialah Negara Kesatuan, yang berbentuk Republik. (2) Kedaulatan berada di tangan rakyat dan dilaksanakan menurut Undang-Undang Dasar. (3) Negara Indonesia adalah negara hukum.", kat: "UUD 1945" },
-            { judul: "UUD 1945 - Pasal 27", isi: "(1) Segala warga negara bersamaan kedudukannya di dalam hukum dan pemerintahan. (2) Tiap-tiap warga negara berhak atas pekerjaan dan penghidupan yang layak bagi kemanusiaan.", kat: "UUD 1945" },
+            { judul: "UUD 1945 - Pasal 1 Ayat (3)", isi: "Negara Indonesia adalah negara hukum.", kat: "UUD 1945" },
+            { judul: "UUD 1945 - Pasal 27 Ayat (2)", isi: "Tiap-tiap warga negara berhak atas pekerjaan dan penghidupan yang layak bagi kemanusiaan.", kat: "UUD 1945" },
+            { judul: "UUD 1945 - Pasal 28D Ayat (1)", isi: "Setiap orang berhak atas pengakuan, jaminan, perlindungan, dan kepastian hukum yang adil serta perlakuan yang sama di hadapan hukum.", kat: "UUD 1945" },
             { judul: "KUHP - Pasal 362 (Pencurian)", isi: "Barang siapa mengambil barang sesuatu, yang seluruhnya atau sebagian kepunyaan orang lain, dengan maksud untuk dimiliki secara melawan hukum, diancam karena pencurian, dengan pidana penjara paling lama lima tahun.", kat: "KUHP" },
-            { judul: "KUHP - Pasal 378 (Penipuan)", isi: "Barang siapa dengan maksud untuk menguntungkan diri sendiri atau orang lain secara melawan hukum, dengan memakai nama palsu atau martabat palsu, dengan tipu muslihat, diancam karena penipuan dengan pidana penjara paling lama empat tahun.", kat: "KUHP" },
-            { judul: "UU ITE - Pasal 27A (Pencemaran Nama Baik)", isi: "Setiap Orang dengan sengaja menyerang kehormatan atau nama baik orang lain dengan menuduhkan suatu hal melalui Sistem Elektronik dengan maksud supaya hal tersebut diketahui umum.", kat: "UU ITE" },
-            { judul: "UU Perlindungan Data Pribadi (PDP) - Pasal 65", isi: "Setiap Orang dilarang secara melawan hukum memperoleh atau mengumpulkan Data Pribadi yang bukan miliknya dengan maksud untuk menguntungkan diri sendiri atau orang lain.", kat: "UU ITE" },
-            { judul: "UU Ketenagakerjaan - Pasal 77", isi: "(1) Setiap pengusaha wajib melaksanakan ketentuan waktu kerja. (2) Waktu kerja sebagaimana dimaksud meliputi 7 jam 1 hari dan 40 jam 1 minggu untuk 6 hari kerja, atau 8 jam 1 hari dan 40 jam 1 minggu untuk 5 hari kerja.", kat: "Ketenagakerjaan" }
+            { judul: "KUHP - Pasal 378 (Penipuan)", isi: "Barang siapa dengan maksud untuk menguntungkan diri sendiri atau orang lain secara melawan hukum, dengan memakai nama palsu atau tipu muslihat, diancam karena penipuan dengan pidana penjara paling lama empat tahun.", kat: "KUHP" },
+            { judul: "KUHP - Pasal 310 (Pencemaran Nama Baik)", isi: "Barang siapa sengaja merusak kehormatan atau nama baik seseorang dengan menuduhkan sesuatu hal, diancam karena pencemaran dengan pidana penjara paling lama sembilan bulan.", kat: "KUHP" },
+            { judul: "KUHPerdata - Pasal 1320 (Syarat Sah Perjanjian)", isi: "Supaya terjadi persetujuan yang sah, diperlukan empat syarat: 1. Kesepakatan mereka yang mengikatkan dirinya; 2. Kecakapan untuk membuat suatu perikatan; 3. Suatu pokok persoalan tertentu; 4. Suatu sebab yang tidak terlarang.", kat: "KUHPerdata" },
+            { judul: "KUHPerdata - Pasal 1365 (Perbuatan Melawan Hukum)", isi: "Tiap perbuatan yang melanggar hukum dan membawa kerugian kepada orang lain, mewajibkan orang yang menimbulkan kerugian itu karena salahnya untuk menggantikan kerugian tersebut.", kat: "KUHPerdata" },
+            { judul: "UU ITE - Pasal 27A", isi: "Setiap Orang dengan sengaja menyerang kehormatan atau nama baik orang lain dengan menuduhkan suatu hal melalui Sistem Elektronik dengan maksud supaya hal tersebut diketahui umum.", kat: "UU ITE" },
+            { judul: "UU PDP - Pasal 65 (Perlindungan Data Pribadi)", isi: "Setiap Orang dilarang secara melawan hukum memperoleh atau mengumpulkan Data Pribadi yang bukan miliknya dengan maksud untuk menguntungkan diri sendiri atau orang lain.", kat: "UU ITE" },
+            { judul: "UU Ketenagakerjaan - Pasal 77", isi: "Waktu kerja meliputi 7 jam 1 hari dan 40 jam 1 minggu untuk 6 hari kerja, atau 8 jam 1 hari dan 40 jam 1 minggu untuk 5 hari kerja.", kat: "Ketenagakerjaan" },
+            { judul: "UU Ketenagakerjaan - Pasal 156 (Pesangon)", isi: "Dalam hal terjadi pemutusan hubungan kerja (PHK), pengusaha diwajibkan membayar uang pesangon dan/atau uang penghargaan masa kerja.", kat: "Ketenagakerjaan" }
         ];
 
         function renderResults(data) {
             const container = document.getElementById('resultsContainer');
             container.innerHTML = '';
             if(data.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color:#718096;">Tidak ada peraturan yang cocok dengan pencarian Anda.</p>';
+                container.innerHTML = '<div class="card"><p style="text-align:center; color:#64748b;">Tidak ada pasal/peraturan yang ditemukan.</p></div>';
                 return;
             }
             data.forEach(item => {
@@ -80,7 +88,8 @@
         }
 
         function searchLaw() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if(!query) { renderResults(databaseHukum); return; }
             const filtered = databaseHukum.filter(item => 
                 item.judul.toLowerCase().includes(query) || item.isi.toLowerCase().includes(query)
             );
@@ -92,7 +101,6 @@
             renderResults(filtered);
         }
 
-        // Tampilkan semua saat pertama dibuka
         renderResults(databaseHukum);
     </script>
 </body>
